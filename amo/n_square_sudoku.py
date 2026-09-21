@@ -1,5 +1,6 @@
 from pysat.solvers import Solver
-import pairwise_amo, bitwise_amo, commander_amo, sequential_amo, product_amo
+import pairwise_amo, bitwise_amo
+
 
 # Solve sudoku board n² x n²
 def solve_n_sudoku(board: list, n: int, type_amo=pairwise_amo, name_amo='Pairwise') -> None:

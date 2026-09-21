@@ -1,5 +1,6 @@
 from pysat.solvers import Solver
-import pairwise_amo, bitwise_amo, commander_amo, sequential_amo, product_amo
+import pairwise_amo, sequential_amo
+
 
 # Solve n-queens problem
 def solve_n_queens(board: list, n: int, type_amo=pairwise_amo, name_amo='Pairwise') -> None:
