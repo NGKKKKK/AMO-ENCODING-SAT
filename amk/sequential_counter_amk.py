@@ -1,20 +1,26 @@
 from pysat.solvers import Solver
-import math
+from amo import bitwise_amo
 
 def encode(literals: list, k: int, current_id: int = None) -> list:
     size = len(literals)
     if current_id is None:
-        current_id = max(literals) if size > 0 else 0
-    if size <= 1 or k >= size:
-        return [[], [], current_id]
+        current_id = max(abs(lit) for lit in literals) if size > 0 else 0
+    if k < 0:
+        return [[[]], [], current_id]
     if k == 0:
         return [[[-x] for x in literals], [], current_id]
+    if size <= 1 or k >= size:
+        return [[], [], current_id]
+    if k == 1:
+        cl1, au1, id1 = bitwise_amo.encode(literals, current_id)
+        # print(f'log: {cl1}')
+        return [cl1, au1, id1]
     def get_id(x: int, y: int) -> int:
-        return x * k + y + current_id + 1
-    new_id = current_id + (size - 1) * k
-    au_literals = [[get_id(i, j) for j in range(k)] for i in range(size - 1)]
+        return x*k + y + current_id + 1
+    new_id = current_id + (size-1)*k
+    au_literals = [[get_id(i, j) for j in range(k)] for i in range(size-1)]
     clauses = [[-literals[0], au_literals[0][0]]]
-    for i in range(1, size - 1):
+    for i in range(1, size-1):
         x = literals[i]
         clauses.append([-x, au_literals[i][0]])
         for j in range(k):
@@ -33,8 +39,6 @@ def solve(model_name: str, literals: list, k: int) -> None:
     try:
         for c in clauses:
             solver.add_clause(c)
-        solver.add_clause([literals[0]])
-        solver.add_clause([literals[1]])
         if solver.solve():
             model = solver.get_model()
             print(f'Solution with auxiliary literals: {model}')
@@ -50,5 +54,5 @@ def solve(model_name: str, literals: list, k: int) -> None:
 
 
 if __name__ == '__main__':
-    test = [1,2,3,4,5,6,7,8]
+    test = [1,2,3,4,5]
     solve('glucose4', test, 1)
